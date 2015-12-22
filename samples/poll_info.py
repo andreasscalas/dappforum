@@ -16,29 +16,29 @@ srMan = ForumManager.ForumManager (consMan, wallet=wallet)
 
 os.system ('clear')
 pollid = input('Insert the ID of the poll: ')
-try:
-	poll = srMan.getPollInfo(pollid)
-	print ('The poll is ', poll['status'])
-	print ('Title of the poll:\t',poll['title'])
+#try:
+poll = srMan.getPollInfo(pollid)
+print ('The poll is ', poll['status'])
+print ('Title of the poll:\t',poll['title'])
+
+outcomes = poll['outcomes']
+print('Votes:')
+i=0	
+for vote in outcomes.keys():
+	print (vote, outcomes[vote])
+	i=i+1
 	
-	outcomes = poll['outcomes']
+votes = poll['votes']
+if len (votes) > 0:
 	print('Votes:')
 	i=0	
-	for vote in outcomes.keys():
-		print (vote, outcomes[vote])
+	for c in votes.values():
+		print ("%d)"% i, c)
 		i=i+1
-		
-	votes = poll['votes']
-	if len (votes) > 0:
-		print('Votes:')
-		i=0	
-		for c in votes.values():
-			print ("%d)"% i, c)
-			i=i+1
 
-	print ('The poll will close on ',time.strftime("%d/%m/%Y - %H.%M",time.gmtime(poll['deadline'])))
+print ('The poll will close on ',poll['deadline'])
 	
-except:
-	print('Error')
+#except:
+#	print('Error')
 	
 

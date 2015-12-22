@@ -4,6 +4,7 @@
 
 import logging
 import time
+import calendar
 
 from contractvmd import config, dapp
 from contractvmd.proto import Protocol
@@ -413,14 +414,12 @@ class ForumCore (dapp.Core):
 		posts=self.database.get ('posts')
 		found=0
 		for post in posts.values(): 
-			logger.pluginfo(post)
 			comments = post['comments']
 			if commentid in comments:
 				#I check if the user that wants to edit the comment is the 
 				#owner of the comment itself (only the real owner can edit it)
 				found=1
-				c = comments[commentid]
-				logger.pluginfo(c)			
+				c = comments[commentid]			
 				if c['owner']==owner:
 					c['comment']=comment
 					self.database.set('posts', posts) #This will override the comment in the db with the new comment
@@ -500,7 +499,10 @@ class ForumCore (dapp.Core):
 		polls=self.database.get ('polls')
 		if pollid in polls:
 			poll=polls[pollid]
-			if poll['deadline'] > int(time.time()):
+			deadline_human = time.strptime(poll['deadline'], "%d/%m/%Y - %H.%M")
+			deadline_human
+			deadline=calendar.timegm(deadline_human)
+			if deadline > int(time.time()):
 				votes=poll['votes']
 				#I check in the list of votes if the vote already exists 
 				#(this will prevent the case in which a message is received more then 1 time)
@@ -549,7 +551,10 @@ class ForumCore (dapp.Core):
 		polls = self.database.get('polls')
 		poll = polls[pollid]
 		#I define if the poll is open or closed 
-		if poll['deadline'] > int(time.time()):		
+		deadline_human = time.strptime(poll['deadline'], "%d/%m/%Y - %H.%M")
+		deadline_human
+		deadline=calendar.timegm(deadline_human)
+		if deadline > int(time.time()):	
 			return_dict['status'] = 'open'
 		else:
 			return_dict['status'] = 'closed'
@@ -562,14 +567,14 @@ class ForumCore (dapp.Core):
 		votes = poll['votes']	
 		#If there are votes in the poll i check what is
 		#the choice of each vote and I increment the outcome
-		#of he corresponding choice
+		#of the corresponding choice
 		if(len(votes) > 0):
 			for vote in votes.values():
-				res[vote]=res[vote]+1
+				choice=vote['choice']
+				res[choice]=res[choice]+1
 		return_dict['outcomes']=res
 		return_dict['votes']=votes
 		return_dict['deadline']=poll['deadline']
-		
 		return return_dict
 
 	#This method returns the information about the user

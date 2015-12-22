@@ -11,243 +11,436 @@ import time
 consMan = ConsensusManager.ConsensusManager ()
 consMan.bootstrap ("http://127.0.0.1:8181")
 
-wallet_A = WalletExplorer.WalletExplorer (wallet_file='A.wallet')
-srManA = ForumManager.ForumManager (consMan, wallet=wallet_A)
-
-wallet_B = WalletExplorer.WalletExplorer (wallet_file='B.wallet')
-srManB = ForumManager.ForumManager (consMan, wallet=wallet_B)
-
-#***********Creation of post and comment by wallet A************
 try:
-	postid = srManA.createPost('Hello post', 'Post di test')
+	#Detection of wallet_A, if it doesn't exist it will be created
+	wallet_A = WalletExplorer.WalletExplorer (wallet_file='A.wallet')
+	#Creation of the ForumManager for the wallet A
+	srManA = ForumManager.ForumManager (consMan, wallet=wallet_A)	
+	
+	#Detection of wallet_B, if it doesn't exist it will be created
+	wallet_B = WalletExplorer.WalletExplorer (wallet_file='B.wallet')
+	#Creation of the ForumManager for the wallet B
+	srManB = ForumManager.ForumManager (consMan, wallet=wallet_B)
+	#Just to check if the system is working
+	srManA.listPosts()
 except:
-	print('Error 1')
+	#In the case contracvmd is not running or the dapp is not installed the program will exit
+	print('Contractvm is not running or the dapp is not installed properly')
+	os._exit(1)
 
-while True:
+try:
+	#***********Creation of post and comment by wallet A************
+	try:
+		#Creation of the first post of user A
+		postid = srManA.createPost('Hello post', 'Post di test')
+	except:
+		print('Error 1')
+
+	#The program will wait until the post is saved in the db, showing the list of posts in
+	#the db
 	os.system ('clear')
 	posts = srManA.listPosts()
 	print('Posts: ', list(posts.keys()))
-	if postid in posts:
-		break
-	time.sleep(5)
+	while True:
+		posts = srManA.listPosts()
+		if postid in posts:		
+			print('Posts: ', list(posts.keys()))
+			break
+		time.sleep(30)
 
-print('POST->', postid)
+	#Meaningful print that informs that the post has been created
+	print('Post->', postid)
 
-try:
-	commid = srManA.commentPost(postid, 'This is a comment')
-except:
-	print('Error 2')
-
-while True:
-	os.system ('clear')
+	try:
+		#Creation of the first comment to the post referred by postid for the user A
+		commid = srManA.commentPost(postid, 'This is a comment')
+	except:
+		print('Error 2')
+	
+	#The program will wait until the comment is saved in the db, showing the details
+	#of the post that will be commentedos.system ('clear')
 	post = srManA.getPostInfo(postid)
 	print('Post ', postid)
 	print(post['title'], ' ', post['message'], ' ', list(post['comments'].values()))
-	if commid in post['comments']:
-		break
-	time.sleep(5)
+	while True:
+		post = srManA.getPostInfo(postid)
+		if commid in post['comments']:
+			print('Post ', postid)
+			print(post['title'], ' ', post['message'], ' ', list(post['comments'].values()))
+			break
+		time.sleep(30)
 
-print('COMMENT->', commid)
+	#Meaningful print that informs that the comment has been saved
+	print('COMMENT->', commid)
 
-#***********Creation of post and comment by wallet B************
-try:
-	postid2 = srManB.createPost('Hello post 2', 'Post di test 2')
-except:
-	print('Error 3')
+	#***********Creation of post and comment by wallet B************
+	try:
+		#Creation of the first post of user B
+		postid2 = srManB.createPost('Hello post 2', 'Post di test 2')
+	except:
+		print('Error 3')
 
-try:
-	commid2 = srManB.commentPost(postid, 'This is a comment of B')
-except:
-	print('Error 4')
+	try:
+		#Creation of the first comment to the post referred by postid for 
+		#the user B
+		commid2 = srManB.commentPost(postid, 'This is a comment of B')
+	except:
+		print('Error 4')
 
-while True:
-	os.system ('clear')
+	#The program will wait until the comment is saved in the db, showing the details
+	#of the post that will be commented
 	post = srManB.getPostInfo(postid)
 	print('Post ', postid)
 	print(post['title'], ' ', post['message'], ' ', list(post['comments'].values()))
-	if commid2 in post['comments']:
-		break
-	time.sleep(5)
+	while True:
+		post = srManB.getPostInfo(postid)
+		if commid2 in post['comments']:
+			print('Post ', postid)
+			print(post['title'], ' ', post['message'], ' ', list(post['comments'].values()))
+			break
+		time.sleep(30)
 
-print('COMMENT->', commid2)
+	#Meaningful print that informs that the comment has been saved
+	print('COMMENT->', commid2)
 
-while True:
-	posts = srManA.listPosts()
-	if postid2 in posts:
-		break
-	time.sleep(5)
+	#The program will wait until the post is saved in the db
+	while True:
+		posts = srManA.listPosts()
+		if postid2 in posts:
+			break
+		time.sleep(30)
 
-print('POST->', postid2)
+	#Meaningful print that informs that the post has been saved
+	print('POST->', postid2)
 
-#**************************End of Basic part***************************
+	#**************************End of Basic part***************************
 
-#***************Creation of poll and votes by wallet A*****************
-try:
-	pollid = srManA.createPoll('Title', ['answer1', 'answer2', 'answer3', 'answer4'], '31/12/2017')
+	#***************Creation of poll and votes by wallet A*****************
+	try:
+		#Creation of the first poll of user A
+		pollid = srManA.createPoll('Title', ['answer1', 'answer2', 'answer3', 'answer4'], '31/12/2017 - 23.59')
 	
-except:
-	print('Error 5')
+	except:
+		print('Error 5')
 
-while True:
-	os.system ('clear')
+	#The program will wait until the poll is saved in the db, showing the list of polls in
+	#the db
 	polls = srManA.listPolls()
-	print('Posts: ', list(polls.keys()))
-	if pollid in polls:
-		break
-	time.sleep(5)
+	print('Polls: ', list(polls.keys()))
+	while True:
+		polls = srManA.listPolls()
+		if pollid in polls:
+			print('Polls: ', list(polls.keys()))
+			break
+		time.sleep(30)
 
-print('POLL->', pollid)
+	#Meaningful print that informs that the poll has been saved
+	print('POLL->', pollid)
 
-try:
-	voteid1 = srManA.vote(pollid, 'answer1')
-except:
-	print('Error 6')
+	try:
+		#First vote for the user to the poll referred by pollid
+		voteid1 = srManA.vote(pollid, 'answer1')
+	except:
+		print('Error 6')
 
-try:
-	voteid2 = srManA.vote(pollid, 'answer2')
-except:
-	print('Error 7')
+	#################################VERY IMPORTANT##################################
+	#I've modified the sequence, anticipating the infinite loop inserted for waiting#
+	#the insertion of the vote referred by voteid1, to prevent the case in which the#
+	#vote referred by voteid2 is received before that referred by voteid1. If i had #
+	#preserved the original sequence, the order in which the two transactions are   #
+	#received would be nondeterministic (I can't say which of the transations would #
+	#fail.									 	# 
+	#################################################################################
 
-while True:
-	os.system ('clear')
+	#The program will wait until the vote is saved in the db, showing the details
+	#of the poll that will be voted
 	poll = srManA.getPollInfo(pollid)
 	print('Poll ', pollid)
-	print(poll['title'], ' ', poll['choices'], ' ', list(poll['votes'].values()), ' ', poll['deadline'])
-	if voteid1 in poll['votes']:
-		break
-	time.sleep(5)
+	print(poll['status'], ' ', poll['title'], ' ', poll['outcomes'], ' ', list(poll['votes'].values()), ' ', poll['deadline'])
+	while True:
+		poll = srManA.getPollInfo(pollid)
+		if voteid1 in poll['votes']:
+			print('Poll ', pollid)
+			print(poll['status'], ' ', poll['title'], ' ', poll['outcomes'], ' ', list(poll['votes'].values()), ' ', poll['deadline'])
+			break
+		time.sleep(30)
 
-print('VOTE->', voteid1)
+	#Meaningful print that informs that the vote has been saved
+	print('VOTE->', voteid1)
 
-#***************Creation of poll and votes by wallet B*****************
-try:
-	voteid3 = srManB.vote(pollid, 'answer2')
-except:
-	print('Error 8')
+	try:
+		#Creation of the second vote for the user A to the poll referred by pollid (it shouldn't work,
+		#the user has already voted
+		voteid2 = srManA.vote(pollid, 'answer2')
+	except:
+		print('Error 7')
 
-while True:
-	os.system ('clear')
+
+	#***************Creation of poll and votes by wallet B*****************
+	try:
+		#Creation of the first vote for the user B to the poll refered by pollid
+		voteid3 = srManB.vote(pollid, 'answer2')
+	except:
+		print('Error 8')
+
+	#The program will wait until the vote is saved in the db, showing the details
+	#of the poll that will be voted
 	poll = srManB.getPollInfo(pollid)
 	print('Poll ', pollid)
-	print(poll['title'], ' ', poll['choices'], ' ', list(poll['votes'].values()), ' ', poll['deadline'])
-	if voteid3 in poll['votes']:
-		break
-	time.sleep(5)
+	print(poll['status'], ' ', poll['title'], ' ', poll['outcomes'], ' ', list(poll['votes'].values()), ' ', poll['deadline'])
+	while True:
+		poll = srManB.getPollInfo(pollid)
+		if voteid3 in poll['votes']:
+			print('Poll ', pollid)
+			print(poll['status'], ' ', poll['title'], ' ', poll['outcomes'], ' ', list(poll['votes'].values()), ' ', poll['deadline'])
+			break
+		time.sleep(30)
 
-print('VOTE->', voteid3)
+	#Meaningful print that informs that the vote has been saved
+	print('VOTE->', voteid3)
 
-try:
-	pollid2 = srManB.createPoll('Title', ['answer1', 'answer2', 'answer3', 'answer4'], '31/12/2017')
+	try:
+		#Creation of the first poll for the user B
+		pollid2 = srManB.createPoll('Title', ['answer1', 'answer2', 'answer3', 'answer4'], '31/12/2017 - 23.59')
 	
-except:
-	print('Error 9')
+	except:
+		print('Error 9')
 
-while True:
-	os.system ('clear')
+	#The program will wait until the poll is saved in the db, showing the list of polls in
+	#the db
 	polls = srManB.listPolls()
-	print('Posts: ', list(polls.keys()))
-	if pollid2 in polls:
-		break
-	time.sleep(5)
+	print('Polls: ', list(polls.keys()))
+	while True:
+		polls = srManB.listPolls()
+		if pollid2 in polls:			
+			print('Polls: ', list(polls.keys()))
+			break
+		time.sleep(30)
 
-print('POLL->', pollid2)
+	#Meaningful print that informs that the poll has been saved
+	print('POLL->', pollid2)
 
-#*************************End of Advanced part*************************
+	#*************************End of Advanced part*************************
 
-print(srManA.getUserInfo(wallet_A.getAddress()))
+	#Print of the information of the user A
+	user_info=srManA.getUserInfo(wallet_A.getAddress())
+	print('Posts owned by the user: ')
+	posts=user_info['posts']
+	for post in posts.values():
+		print('Title: ', post['title'])
+	print("\n")
+	print('Comments owned by the user: ')
+	comments=user_info['comments']
+	for comment in comments.values():
+		print('Comment: ', comment['comment'])
+	print("\n")
+	print('Polls owned by the user: ')
+	polls=user_info['polls']
+	for poll in polls.values():
+		print('Poll: ', poll['title'])
 
-try:
-	srManB.editComment(commid, 'New comment 1 message')
-except:
-	print('Error 10')
+	try:
+		#Editing of the comment referred by commentid (it shouldn't work,
+		#the comment is not owned by B)
+		srManB.editComment(commid, 'New comment 1 message')
+	except:
+		print('Error 10')
 
-try:
-	srManA.editComment(commid, 'New comment 2 message')
-except:
-	print('Error 11')
+	try:
+		#Editing of the comment referred by commentid by user A
+		srManA.editComment(commid, 'New comment 2 message')
+	except:
+		print('Error 11')
 
-try:
-	srManB.editPost(postid, 'New hello post', 'New message!')
-except:
-	print('Error 12')
-
-try:
-	srManA.editPost(postid, 'New hello post A', 'New message!')
-except:
-	print('Error 13')
-
-while True:
-	os.system ('clear')
-	posts = srManA.listPosts()
-	print('Posts: ', list(posts.keys()))
-	post=posts[postid]
-	if post['title']=='New hello post A':
-		break
-	time.sleep(5)
-
-print('Edit POST->', postid)
-
-try:
-	srManA.deleteComment(commid)
-except:
-	print('Error 14')
-
-try:
-	commid3 = srManB.commentPost(postid, 'This is a new comment')
-except:
-	print('Error 15')
-
-while True:
-	os.system ('clear')
+	#The program will wait until the new comment is saved in the db, showing the details
+	#of the post of the comment that will be edited
 	post = srManB.getPostInfo(postid)
 	print('Post ', postid)
 	print(post['title'], ' ', post['message'], ' ', list(post['comments'].values()))
-	if commid3 in post['comments']:
-		break
-	time.sleep(5)
+	while True:
+		post = srManB.getPostInfo(postid)
+		comments=post['comments']
+		comment=post[commid]
+		if comment['comment']=='New comment 2 message':
+			print('Post ', postid)
+			print(post['title'], ' ', post['message'], ' ', list(post['comments'].values()))
+			break
+		time.sleep(30)
 
-print('COMMENT->', commid)
+	#Meaningful print that informs that the new comment has been saved
+	print('Edit COMMENT->', commid)
 
-try:
-	srManA.deleteComment(commid3)
-except:
-	print('Error 16')
+	try:
+		#Editing of the post referred by postid (it shouldn't work,
+		#the post is not owned by B)
+		srManB.editPost(postid, 'New hello post', 'New message!')
+	except:
+		print('Error 12')
 
-try:
-	srManB.deletePost(postid)
-except:
-	print('Error 17')
+	try:
+		#Editing of the post referred by postid by user A
+		srManA.editPost(postid, 'New hello post A', 'New message!')
+	except:
+		print('Error 13')
 
-try:
-	srManA.deletePost(postid)
-except:
-	print('Error 18')
-
-while True:
-	os.system ('clear')
+	#The program will wait until the new post is saved in the db, showing the list of posts in
+	#the db
 	posts = srManA.listPosts()
 	print('Posts: ', list(posts.keys()))
-	if not(postid in posts):
-		break
-	time.sleep(5)
+	while True:
+		posts = srManA.listPosts()
+		post=posts[postid]
+		if post['title']=='New hello post A':
+			print('Posts: ', list(posts.keys()))
+			break
+		time.sleep(30)
 
-print('Delete POST->', postid)
+	#Meaningful print that informs that the new post has been saved
+	print('Edit POST->', postid)
 
-try:
-	srManB.deletePoll(pollid2)
-except:
-	print('Error 19')
+	try:
+		#Deletion of the first comment inserted by user A
+		srManA.deleteComment(commid)
+	except:
+		print('Error 14')
 
-while True:
-	os.system ('clear')
+	try:
+		commid3 = srManB.commentPost(postid, 'This is a new comment')
+	except:
+		print('Error 15')
+
+	#The program will wait until the comment is saved in the db, showing the details
+	#of the post that will be commented
+	post = srManB.getPostInfo(postid)
+	print('Post ', postid)
+	print(post['title'], ' ', post['message'], ' ', list(post['comments'].values()))
+	while True:
+		post = srManB.getPostInfo(postid)
+		if commid3 in post['comments']:
+			print('Post ', postid)
+			print(post['title'], ' ', post['message'], ' ', list(post['comments'].values()))
+			break
+		time.sleep(30)
+
+	#Meaningful print that informs that the comment has been saved
+	print('COMMENT->', commid3)
+
+	try:
+		#Deletion, by the user A, of the comment just inserted by the user B
+		#(it shouldn't work, the comment isn't owned by A)
+		srManA.deleteComment(commid3)
+	except:
+		print('Error 16')
+
+	try:
+		#Deletion, by the user A, of the comment just inserted by the user B
+		#(it shouldn't work, the comment isn't owned by A)
+		srManB.deleteComment(commid3)
+	except:
+		print('Error 17')	
+
+	#The program will wait until the comment is deleted from the db, showing the details
+	#of the post of the comment that will be deleted
+	post = srManB.getPostInfo(postid)
+	print('Post ', postid)
+	print(post['title'], ' ', post['message'], ' ', list(post['comments'].values()))
+	while True:
+		post = srManB.getPostInfo(postid)
+		if not(commid3 in post['comments']):
+			print('Post ', postid)
+			print(post['title'], ' ', post['message'], ' ', list(post['comments'].values()))
+			break
+		time.sleep(30)
+
+	#Meaningful print that informs that the comment has been saved
+	print('Delete COMMENT->', commid3)
+
+	try:
+		#Deletion, by the user B, of the first post created by the user A
+		#(it shouldn't work, the post isn't owned by B)
+		srManB.deletePost(postid)
+	except:
+		print('Error 18')
+
+	try:
+		#Deletion of the first post inserted by user A
+		srManA.deletePost(postid)
+	except:
+		print('Error 19')
+
+	#The program will wait until the post will be deleted, showing
+	#the list of posts in the db
+	posts = srManA.listPosts()
+	print('Posts: ', list(posts.keys()))
+	while True:
+		posts = srManA.listPosts()
+		if not(postid in posts):
+			print('Posts: ', list(posts.keys()))
+			break
+		time.sleep(30)
+
+	#Meaningful print that informs about the deletion of the post
+	print('Delete POST->', postid)
+
+	try:
+		#Deletion of the first poll created by user B
+		srManB.deletePoll(pollid2)
+	except:
+		print('Error 20')
+
+	#The program will wait unil the poll will be deleted from the db,
+	#showing the list of polls in the db
 	polls = srManB.listPolls()
-	print('Posts: ', list(polls.keys()))
-	if pollid2 in polls:
-		break
-	time.sleep(5)
+	print('Polls: ', list(polls.keys()))
+	while True:
+		polls = srManB.listPolls()
+		if pollid2 in polls:
+			print('Polls: ', list(polls.keys()))
+			break
+		time.sleep(30)
 
-print('Delete POLL->', pollid2)
+	#Meaningful print about the deletion of the poll
+	print('Delete POLL->', pollid2)
 
-print(srManA.getUserInfo(wallet_B.getAddress()))
+	#Print of the information of the user B
+	user_info=srManB.getUserInfo(wallet_B.getAddress())
+	print('Posts owned by the user: ')
+	posts=user_info['posts']
+	for post in posts.values():
+		print('Title: ', post['title'])
+	print("\n")
+	print('Comments owned by the user: ')
+	comments=user_info['comments']
+	for comment in comments.values():
+		print('Comment: ', comment['comment'])
+	print("\n")
+	print('Polls owned by the user: ')
+	polls=user_info['polls']
+	for poll in polls.values():
+		print('Poll: ', poll['title'])
 
-print(srManA.getUserInfo(wallet_A.getAddress()))
+	#Print of the information of the user A
+	user_info=srManA.getUserInfo(wallet_A.getAddress())
+	print('Posts owned by the user: ')
+	posts=user_info['posts']
+	for post in posts.values():
+		print('Title: ', post['title'])
+	print("\n")
+	print('Comments owned by the user: ')
+	comments=user_info['comments']
+	for comment in comments.values():
+		print('Comment: ', comment['comment'])
+	print("\n")
+	print('Polls owned by the user: ')
+	polls=user_info['polls']
+	for poll in polls.values():
+		print('Poll: ', poll['title'])
+
+	os._exit(0)
+	
+except:
+	#In the case that one or both the wallets are "empty" the program will exit
+	#There is even the case that, for some reason, contractvmd has been stopped,
+	#(in that case the program will exit)
+	print('You have to recharge wallets or, if you have stopped the contracvmd, you have to restart it')
+	os._exit(1)
