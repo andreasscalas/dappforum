@@ -260,7 +260,7 @@ try:
 	while True:
 		post = srManB.getPostInfo(postid)
 		comments=post['comments']
-		comment=post[commid]
+		comment=comments[commid]
 		if comment['comment']=='New comment 2 message':
 			print('Post ', postid)
 			print(post['title'], ' ', post['message'], ' ', list(post['comments'].values()))
