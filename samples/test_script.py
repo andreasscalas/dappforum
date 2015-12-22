@@ -226,7 +226,9 @@ try:
 	user_info=srManA.getUserInfo(wallet_A.getAddress())
 	print('Posts owned by the user: ')
 	posts=user_info['posts']
-	for post in posts.values():
+	for key in posts.keys():
+		post=posts[key]
+		print('ID: ', key)
 		print('Title: ', post['title'])
 	print("\n")
 	print('Comments owned by the user: ')
@@ -404,37 +406,47 @@ try:
 
 	#Print of the information of the user B
 	user_info=srManB.getUserInfo(wallet_B.getAddress())
-	print('Posts owned by the user: ')
+	print('Posts owned by user B: ')
 	posts=user_info['posts']
-	for post in posts.values():
+	for key in posts.keys():
+		post=posts[key]
+		print('ID: ', key)
 		print('Title: ', post['title'])
 	print("\n")
-	print('Comments owned by the user: ')
+	print('Comments owned by user B: ')
 	comments=user_info['comments']
 	for comment in comments.values():
 		print('Comment: ', comment['comment'])
 	print("\n")
-	print('Polls owned by the user: ')
+	print('Polls owned by user B: ')
 	polls=user_info['polls']
-	for poll in polls.values():
-		print('Poll: ', poll['title'])
+	for key in polls.keys():
+		poll=polls[key]
+		print('ID: ', key)
+		print('Title: ', poll['title'])
 
 	#Print of the information of the user A
 	user_info=srManA.getUserInfo(wallet_A.getAddress())
-	print('Posts owned by the user: ')
+	print('Posts owned by user A: ')
 	posts=user_info['posts']
-	for post in posts.values():
+	for key in posts.keys():
+		post=posts[key]
+		print('ID: ', key)
 		print('Title: ', post['title'])
 	print("\n")
-	print('Comments owned by the user: ')
+	print('Comments owned by user A: ')
 	comments=user_info['comments']
-	for comment in comments.values():
+	for key in comments.keys():
+		comment=comments[key]
+		print('ID: ', key)
 		print('Comment: ', comment['comment'])
 	print("\n")
-	print('Polls owned by the user: ')
+	print('Polls owned by user A: ')
 	polls=user_info['polls']
-	for poll in polls.values():
-		print('Poll: ', poll['title'])
+	for key in polls.keys():
+		poll=polls[key]
+		print('ID: ', key)
+		print('Title: ', poll['title'])
 
 	os._exit(0)
 	
