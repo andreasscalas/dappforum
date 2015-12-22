@@ -394,7 +394,7 @@ try:
 	print('Polls: ', list(polls.keys()))
 	while True:
 		polls = srManB.listPolls()
-		if pollid2 in polls:
+		if not(pollid2 in polls):
 			print('Polls: ', list(polls.keys()))
 			break
 		time.sleep(30)
